@@ -65,6 +65,8 @@ def substr(data,start,end):
 	i2 = data.find(end,i1)
 	return data[i1:i2]
 
+def icon():
+	return os.path.join(__addon__.getAddonInfo('path'),'icon.png')
 
 def get_params():
         param={}
@@ -98,7 +100,7 @@ def list_category(id):
 		streams.append((m.group('name'),m.group('id')))
 	streams.reverse()
 	for name,id in streams:
-		add_stream(name,id)
+		add_stream(name,id,icon())
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def play(id):
@@ -111,17 +113,17 @@ def play(id):
 		if match:
 			url = BASE_URL+match.group('url').lstrip('./')
 	print 'Sending %s to player' % url
-	li = xbmcgui.ListItem(path=url,iconImage='DefaultAudio.png')
+	li = xbmcgui.ListItem(path=url,iconImage=icon())
 	return xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
 
 def list_streams():
 	data = substr(request(BASE_URL+'jak-nas-naladit.html'),'<div id="page">','</div>')
 	for m in re.finditer('<p>(.*?)<strong>(?P<name>[^<]+)(.+?)<a href=\"(?P<id>[^\"]+)[^>]+>', data, re.IGNORECASE | re.DOTALL):
-		add_stream(m.group('name'),m.group('id'))
+		add_stream(m.group('name'),m.group('id'),icon())
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def root():
-	add_dir(__language__(30000),'streams=&')
+	add_dir(__language__(30000),'streams=&',icon())
 	page = request(BASE_URL+'archiv')
 	data = substr(page,'<div id=\"stt\">','<div id=\"rcol\"')
 	for m in re.finditer('a(.+?)href=\"(?P<url>[^\"]+)[^>]+>(?P<name>[^<]+)',data,re.IGNORECASE | re.DOTALL):
